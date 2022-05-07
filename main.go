@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"encoding/json"
 )
 
 func fatalLog(err error) {
@@ -24,10 +25,14 @@ func ReadOrCreateFile() ([]byte, *os.File) {
 
 func main() {
 	log.Println("Getting started")
-	data, _ := ReadOrCreateFile()
+	data, file := ReadOrCreateFile()
+	commands := make(map[string]map[string]string)
 	if len(data) == 0 {
-		log.Println("Instantiate a map and write to file")
+		commands["main"] = make(map[string]string)
+		jsonData, _ := json.Marshal(commands)
+		file.Write(jsonData)
 	} else {
-		log.Println("Parse the data to a map")
+		json.Unmarshal(data, &commands)
+		log.Println(commands)
 	}
 }
