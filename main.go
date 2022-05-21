@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 )
 
-type CommandStore = map[string]map[string]string
 
 func fatalLog(err error) {
 	if err != nil {
