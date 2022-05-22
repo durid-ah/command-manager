@@ -14,7 +14,7 @@ func fatalLog(err error) {
 }
 
 func readOrCreateFile() ([]byte, *os.File) {
-	file, err := os.OpenFile("./config.json", os.O_CREATE | os.O_RDWR, 0666)
+	file, err := os.OpenFile("./config.json", os.O_CREATE | os.O_RDWR, 0755)
 	fatalLog(err)
 
 	data, err := io.ReadAll(file)
@@ -25,8 +25,14 @@ func readOrCreateFile() ([]byte, *os.File) {
 
 func populateConfigFile(file *os.File) *CommandStore {
 	commands := make(CommandStore)
-	commands["main"] = make(map[string]string)
-	jsonData, _ := json.Marshal(commands)
-	file.Write(jsonData)
+	commands["main"] = make(map[string]CommandInfo)
+	updateConfigFile(file, &commands)
 	return &commands
+}
+
+func updateConfigFile(file *os.File, commands *CommandStore) {
+	jsonData, _ := json.Marshal(commands)
+	file.Truncate(0)
+	file.Seek(0,0)
+	file.Write(jsonData)
 }
