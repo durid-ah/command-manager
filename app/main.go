@@ -8,19 +8,9 @@ import (
 	"github.com/durid-ah/command-manager/parser"
 )
 
-// func fatalLog(err error) {
-// 	if err != nil {
-// 		log.Fatal("Read file failed ", err)
-// 	}
-// }
-
 func main() {
 	log.Println("Getting started")
 	configs := config_store.InitStore()
-
-	// for key, _ := range *configs.Store {
-	// 	println(key)
-	// }
 
 	for {
 		inputReader := bufio.NewReader(os.Stdin)
