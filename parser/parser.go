@@ -1,7 +1,9 @@
 package parser
 
 import (
+	"log"
 	"strings"
+
 	"github.com/durid-ah/command-manager/config_store"
 )
 
@@ -12,7 +14,26 @@ func ParseCommands(
 
 	switch(values[0]) {
 		case "--add-ws":
-			// TODO: check that there is another command
-			commands.AddWorkspace(strings.TrimRight(values[1], "\r\n"))
+			if len(values) == 2 {
+				commands.AddWorkspace(values[1])
+				return
+			}
+			log.Println("Adding workspace requires one argument")
+		
+		case "--del-ws":
+			if len(values) != 2 {
+				log.Println("Deleting workspace requires one argument")
+			} else if values[1] == "main" {
+				log.Println("Deleting main workspace is not allowed")
+			} else {
+				commands.DeleteWorkspace(values[1])
+			}
+
+		case "--list-ws":
+			if len(values) == 1 {
+				commands.ListWorkspaces()
+				return
+			}
+			log.Println("Listing workspace does not take any arguments")
 	}
 }

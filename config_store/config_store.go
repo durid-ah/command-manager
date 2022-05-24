@@ -33,9 +33,15 @@ func InitStore() ConfigStore {
 	}
 }
 
+func (c *ConfigStore) ListWorkspaces() {
+	fmt.Println("Workspaces:")
+	for key := range *c.Store {
+		fmt.Printf("- %s\n", key)
+	}
+}
+
 func (c *ConfigStore) AddWorkspace(workspace string) {
 	_, exists := (*c.Store)[workspace]
-	println(workspace, exists)
 
 	if exists {
 		log.Println("A workspace with this name already exists")
@@ -43,6 +49,19 @@ func (c *ConfigStore) AddWorkspace(workspace string) {
 	}
 
 	(*c.Store)[workspace] = make(map[string]CommandInfo)
+	// TODO: ensure that you can write to file
+	updateConfigFile(c.file, c.Store)
+}
+
+func (c *ConfigStore) DeleteWorkspace(workspace string) {
+	_, exists := (*c.Store)[workspace]
+
+	if !exists {
+		log.Println("A workspace with this name could not be found")
+		return
+	}
+
+	delete(*c.Store, workspace)
 	// TODO: ensure that you can write to file
 	updateConfigFile(c.file, c.Store)
 }

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"strings"
 	"github.com/durid-ah/command-manager/config_store"
 	"github.com/durid-ah/command-manager/parser"
 )
@@ -15,12 +16,11 @@ func main() {
 	for {
 		inputReader := bufio.NewReader(os.Stdin)
 		input, _ :=  inputReader.ReadString('\n')
-		parser.ParseCommands(&input, &configs)
-
-		for key, _ := range *configs.Store {
-			println(key)
+		commandString := strings.TrimRight(input, "\r\n")
+		if commandString == "--quit" {
+			break
 		}
+		parser.ParseCommands(&commandString, &configs)
 
-		break
 	}
 }
