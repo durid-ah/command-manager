@@ -3,16 +3,13 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"strings"
-
 	"github.com/durid-ah/command-manager/config_store"
 	"github.com/durid-ah/command-manager/parser"
 )
 
 func main() {
-	log.Println("Getting started")
 	configs := config_store.InitStore()
 
 	for {
@@ -24,6 +21,5 @@ func main() {
 			break
 		}
 		parser.ParseCommands(&commandString, &configs)
-
 	}
 }

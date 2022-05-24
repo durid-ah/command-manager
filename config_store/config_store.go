@@ -3,6 +3,7 @@ package config_store
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"log"
 	"os"
 )
@@ -76,4 +77,17 @@ func (c *ConfigStore) SelectWorkspace(workspace string) {
 	}
 
 	c.SelectedWorkSpace = workspace
+}
+
+func (c *ConfigStore) AddCommand(alias string, cwd string, command []string) {
+	_, exists := (*c.Store)[c.SelectedWorkSpace][alias]
+
+	if exists {
+		log.Printf("An alias {%s} under workspace {%s} already exists", alias, c.SelectedWorkSpace)
+		return
+	}
+
+	
+	(*c.Store)[c.SelectedWorkSpace][alias] = CommandInfo{Command: strings.Join(command, " "), Cwd: cwd}
+	updateConfigFile(c.file, c.Store)
 }

@@ -3,7 +3,6 @@ package parser
 import (
 	"log"
 	"strings"
-
 	"github.com/durid-ah/command-manager/config_store"
 )
 
@@ -13,6 +12,20 @@ func ParseCommands(
 	values := strings.Split(*input, " ")
 
 	switch(values[0]) {
+		case "--add":
+			if len(values) >= 4 {
+				commands.AddCommand(values[1], values[2], values[3:])
+				return
+			}
+			log.Println("Adding command alias requires at least three argument")
+	
+		case "--del":
+			if len(values) == 2 {
+				// TODO:
+				return
+			}
+			log.Println("Adding command alias requires at least three argument")
+
 		case "--add-ws":
 			if len(values) == 2 {
 				commands.AddWorkspace(values[1])

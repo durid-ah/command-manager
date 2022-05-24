@@ -1,10 +1,10 @@
 package config_store
 
-import(
+import (
+	"encoding/json"
+	"io"
 	"log"
 	"os"
-	"io"
-	"encoding/json"
 )
 
 func fatalLog(err error) {
