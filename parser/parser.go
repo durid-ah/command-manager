@@ -20,6 +20,13 @@ func ParseCommands(
 			}
 			log.Println("Adding workspace requires one argument")
 		
+		case "--sel-ws":
+			if len(values) == 2 {
+				commands.SelectWorkspace(values[1])
+				return
+			}
+			log.Println("Adding workspace requires one argument")
+
 		case "--del-ws":
 			if len(values) != 2 {
 				log.Println("Deleting workspace requires one argument")

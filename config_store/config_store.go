@@ -11,6 +11,7 @@ type CommandStore = map[string]map[string]CommandInfo
 
 type ConfigStore struct {
 	Store *CommandStore
+	SelectedWorkSpace string
 	file *os.File
 }
 
@@ -29,7 +30,7 @@ func InitStore() ConfigStore {
 	}
 
 	return ConfigStore{
-		Store: commands, file: file,
+		Store: commands, SelectedWorkSpace: "main", file: file,
 	}
 }
 
@@ -64,4 +65,15 @@ func (c *ConfigStore) DeleteWorkspace(workspace string) {
 	delete(*c.Store, workspace)
 	// TODO: ensure that you can write to file
 	updateConfigFile(c.file, c.Store)
+}
+
+func (c *ConfigStore) SelectWorkspace(workspace string) {
+	_, exists := (*c.Store)[workspace]
+
+	if !exists {
+		log.Println("A workspace with this name already exists")
+		return
+	}
+
+	c.SelectedWorkSpace = workspace
 }
