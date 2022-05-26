@@ -72,7 +72,7 @@ func (c *ConfigStore) SelectWorkspace(workspace string) {
 	_, exists := (*c.Store)[workspace]
 
 	if !exists {
-		log.Println("A workspace with this name already exists")
+		log.Println("A workspace with this name doesn't exists")
 		return
 	}
 
@@ -89,5 +89,17 @@ func (c *ConfigStore) AddCommand(alias string, cwd string, command []string) {
 
 	
 	(*c.Store)[c.SelectedWorkSpace][alias] = CommandInfo{Command: strings.Join(command, " "), Cwd: cwd}
+	updateConfigFile(c.file, c.Store)
+}
+
+func (c *ConfigStore) DeleteCommand(alias string) {
+	_, exists := (*c.Store)[c.SelectedWorkSpace][alias]
+
+	if !exists {
+		log.Printf("An alias {%s} under workspace {%s} doesn't exists", alias, c.SelectedWorkSpace)
+		return
+	}
+
+	delete((*c.Store)[c.SelectedWorkSpace], alias)
 	updateConfigFile(c.file, c.Store)
 }

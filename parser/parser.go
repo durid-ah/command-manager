@@ -21,10 +21,10 @@ func ParseCommands(
 	
 		case "--del":
 			if len(values) == 2 {
-				// TODO:
+				commands.DeleteCommand(values[1])
 				return
 			}
-			log.Println("Adding command alias requires at least three argument")
+			log.Println("Deleting command alias requires only one argument")
 
 		case "--add-ws":
 			if len(values) == 2 {
