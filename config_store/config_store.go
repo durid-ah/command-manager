@@ -6,6 +6,7 @@ import (
 	"strings"
 	"log"
 	"os"
+	"os/exec"
 )
 
 type CommandStore = map[string]map[string]CommandInfo
@@ -102,4 +103,22 @@ func (c *ConfigStore) DeleteCommand(alias string) {
 
 	delete((*c.Store)[c.SelectedWorkSpace], alias)
 	updateConfigFile(c.file, c.Store)
+}
+
+func (c *ConfigStore) ExecCommand(alias string) {
+	_, exists := (*c.Store)[c.SelectedWorkSpace][alias]
+
+	if !exists {
+		log.Printf("An alias {%s} under workspace {%s} doesn't exists", alias, c.SelectedWorkSpace)
+		return
+	}
+
+	commandInfo := (*c.Store)[c.SelectedWorkSpace][alias]
+
+	// Get command and cwd
+	cmd := exec.Command(commandInfo.Command)
+	cmd.Dir = commandInfo.Cwd
+
+	// TODO: Execute and print out
+	// TODO: Handle cancelling task
 }
