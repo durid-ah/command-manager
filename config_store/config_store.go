@@ -3,10 +3,11 @@ package config_store
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
+	"io"
 	"log"
 	"os"
-	"os/exec"
+	"strings"
+	"unicode/utf8"
 )
 
 type CommandStore = map[string]map[string]CommandInfo
@@ -114,11 +115,28 @@ func (c *ConfigStore) ExecCommand(alias string) {
 	}
 
 	commandInfo := (*c.Store)[c.SelectedWorkSpace][alias]
+	cmd := createCommand(&commandInfo.Command)
+	
+	// Setup the command
+	cmd.Dir = commandInfo.Cwd	
+	outPipe, _ :=  cmd.StdoutPipe()
+	errPipe, _ :=  cmd.StderrPipe()
+	out := io.MultiReader(outPipe, errPipe)
+	
+	startErr := cmd.Start()
+	if startErr != nil {
+		log.Printf("%s", startErr)
+	}	
+		
+	outputBuffer := make([]byte, utf8.UTFMax)
+	for {
+		n, err := out.Read(outputBuffer)
+		fmt.Printf("%s", outputBuffer[:n])
+		if err == io.EOF {
+			break
+		}
+	}
 
-	// Get command and cwd
-	cmd := exec.Command(commandInfo.Command)
-	cmd.Dir = commandInfo.Cwd
-
-	// TODO: Execute and print out
+	cmd.Wait()
 	// TODO: Handle cancelling task
 }

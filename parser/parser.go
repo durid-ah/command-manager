@@ -55,5 +55,8 @@ func ParseCommands(
 				return
 			}
 			log.Println("Listing workspace does not take any arguments")
+		
+		default:
+			commands.ExecCommand(values[0])
 	}
 }
