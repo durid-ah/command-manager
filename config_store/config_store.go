@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/signal"
 	"strings"
 	"unicode/utf8"
 )
@@ -126,16 +127,29 @@ func (c *ConfigStore) ExecCommand(alias string) {
 	startErr := cmd.Start()
 	if startErr != nil {
 		log.Printf("%s", startErr)
-	}	
+	}
+
+	// Logic to handle command cancellation
+	cancelSignal := make(chan os.Signal, 1)
+	signal.Notify(cancelSignal, os.Interrupt)
+	defer signal.Reset(os.Interrupt)
+	defer close(cancelSignal)
 	
 	// Stream the command execution output
 	outputBuffer := make([]byte, utf8.UTFMax)
+	readLoop:
 	for {
-		n, err := out.Read(outputBuffer)
-		fmt.Printf("%s", outputBuffer[:n])
-		if err == io.EOF {
-			break
+		select {
+			case <- cancelSignal:
+				break readLoop
+			default:
+				n, err := out.Read(outputBuffer)
+				fmt.Printf("%s", outputBuffer[:n])
+				if err == io.EOF {
+					break readLoop
+				}
 		}
+
 	}
 
 	cmd.Wait()
