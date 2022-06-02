@@ -127,7 +127,8 @@ func (c *ConfigStore) ExecCommand(alias string) {
 	if startErr != nil {
 		log.Printf("%s", startErr)
 	}	
-		
+	
+	// Stream the command execution output
 	outputBuffer := make([]byte, utf8.UTFMax)
 	for {
 		n, err := out.Read(outputBuffer)
@@ -138,5 +139,4 @@ func (c *ConfigStore) ExecCommand(alias string) {
 	}
 
 	cmd.Wait()
-	// TODO: Handle cancelling task
 }
