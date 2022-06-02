@@ -26,6 +26,16 @@ func ParseCommands(
 			}
 			log.Println("Deleting command alias requires only one argument")
 
+		case "--list":
+			if len(values) == 1 {
+				commands.ListCommandsForWorkspace("")
+				return
+			} else if len(values) == 2 {
+				commands.ListCommandsForWorkspace(values[1])
+				return
+			}
+			log.Println("Deleting command alias requires only one argument")
+
 		case "--add-ws":
 			if len(values) == 2 {
 				commands.AddWorkspace(values[1])

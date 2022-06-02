@@ -14,7 +14,7 @@ import (
 type CommandStore = map[string]map[string]CommandInfo
 
 type ConfigStore struct {
-	Store *CommandStore
+	Store CommandStore
 	SelectedWorkSpace string
 	file *os.File
 }
@@ -22,7 +22,7 @@ type ConfigStore struct {
 func InitStore() ConfigStore {
 	data, file := readOrCreateFile()
 
-	var commands *CommandStore
+	var commands CommandStore
 
 	println("InitStore")
 	fmt.Printf("Stuff: %s \n", data)
@@ -40,39 +40,39 @@ func InitStore() ConfigStore {
 
 func (c *ConfigStore) ListWorkspaces() {
 	fmt.Println("Workspaces:")
-	for key := range *c.Store {
+	for key := range c.Store {
 		fmt.Printf("- %s\n", key)
 	}
 }
 
 func (c *ConfigStore) AddWorkspace(workspace string) {
-	_, exists := (*c.Store)[workspace]
+	_, exists := c.Store[workspace]
 
 	if exists {
 		log.Println("A workspace with this name already exists")
 		return
 	}
 
-	(*c.Store)[workspace] = make(map[string]CommandInfo)
+	c.Store[workspace] = make(map[string]CommandInfo)
 	// TODO: ensure that you can write to file
 	updateConfigFile(c.file, c.Store)
 }
 
 func (c *ConfigStore) DeleteWorkspace(workspace string) {
-	_, exists := (*c.Store)[workspace]
+	_, exists := c.Store[workspace]
 
 	if !exists {
 		log.Println("A workspace with this name could not be found")
 		return
 	}
 
-	delete(*c.Store, workspace)
+	delete(c.Store, workspace)
 	// TODO: ensure that you can write to file
 	updateConfigFile(c.file, c.Store)
 }
 
 func (c *ConfigStore) SelectWorkspace(workspace string) {
-	_, exists := (*c.Store)[workspace]
+	_, exists := c.Store[workspace]
 
 	if !exists {
 		log.Println("A workspace with this name doesn't exists")
@@ -83,7 +83,7 @@ func (c *ConfigStore) SelectWorkspace(workspace string) {
 }
 
 func (c *ConfigStore) AddCommand(alias string, cwd string, command []string) {
-	_, exists := (*c.Store)[c.SelectedWorkSpace][alias]
+	_, exists := c.Store[c.SelectedWorkSpace][alias]
 
 	if exists {
 		log.Printf("An alias {%s} under workspace {%s} already exists", alias, c.SelectedWorkSpace)
@@ -91,31 +91,45 @@ func (c *ConfigStore) AddCommand(alias string, cwd string, command []string) {
 	}
 
 	
-	(*c.Store)[c.SelectedWorkSpace][alias] = CommandInfo{Command: strings.Join(command, " "), Cwd: cwd}
+	c.Store[c.SelectedWorkSpace][alias] = CommandInfo{Command: strings.Join(command, " "), Cwd: cwd}
 	updateConfigFile(c.file, c.Store)
 }
 
 func (c *ConfigStore) DeleteCommand(alias string) {
-	_, exists := (*c.Store)[c.SelectedWorkSpace][alias]
+	_, exists := c.Store[c.SelectedWorkSpace][alias]
 
 	if !exists {
 		log.Printf("An alias {%s} under workspace {%s} doesn't exists", alias, c.SelectedWorkSpace)
 		return
 	}
 
-	delete((*c.Store)[c.SelectedWorkSpace], alias)
+	delete(c.Store[c.SelectedWorkSpace], alias)
 	updateConfigFile(c.file, c.Store)
 }
 
+func (c *ConfigStore) ListCommandsForWorkspace(workspace string) {
+	var workspaceName string;
+	if workspace == "" {
+		workspaceName = c.SelectedWorkSpace
+	} else {
+		workspaceName = workspace
+	}
+
+	workspaceMap := c.Store;
+	for key, val := range workspaceMap[workspaceName] {
+		fmt.Printf("{%s} => {%s} \n", key, val.Command)
+	}
+}
+
 func (c *ConfigStore) ExecCommand(alias string) {
-	_, exists := (*c.Store)[c.SelectedWorkSpace][alias]
+	_, exists := c.Store[c.SelectedWorkSpace][alias]
 
 	if !exists {
 		log.Printf("An alias {%s} under workspace {%s} doesn't exists", alias, c.SelectedWorkSpace)
 		return
 	}
 
-	commandInfo := (*c.Store)[c.SelectedWorkSpace][alias]
+	commandInfo := c.Store[c.SelectedWorkSpace][alias]
 	cmd := createCommand(&commandInfo.Command)
 	
 	// Setup the command
@@ -137,8 +151,8 @@ func (c *ConfigStore) ExecCommand(alias string) {
 	
 	// Stream the command execution output
 	outputBuffer := make([]byte, utf8.UTFMax)
-	readLoop:
-	for {
+	
+	readLoop: for {
 		select {
 			case <- cancelSignal:
 				break readLoop

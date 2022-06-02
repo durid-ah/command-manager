@@ -23,14 +23,14 @@ func readOrCreateFile() ([]byte, *os.File) {
 	return data, file
 }
 
-func populateConfigFile(file *os.File) *CommandStore {
+func populateConfigFile(file *os.File) CommandStore {
 	commands := make(CommandStore)
 	commands["main"] = make(map[string]CommandInfo)
-	updateConfigFile(file, &commands)
-	return &commands
+	updateConfigFile(file, commands)
+	return commands
 }
 
-func updateConfigFile(file *os.File, commands *CommandStore) {
+func updateConfigFile(file *os.File, commands CommandStore) {
 	jsonData, _ := json.Marshal(commands)
 	file.Truncate(0)
 	file.Seek(0,0)

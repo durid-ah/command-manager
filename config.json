@@ -1,1 +1,1 @@
-{"main":{"port":{"Cwd":"C:\\Users\\ahmad\\source\\durid-ah.github.io","Command":"npm run dev"},"portfolio":{"Cwd":"C:\\Users\\ahmad\\source\\durid-ah.github.io","Command":"npm start"},"tree":{"Cwd":"C:\\Users\\ahmad\\source\\ref_cell_btree","Command":"cargo run"}},"my_stuff":{},"stuff":{}}
+{"main":{"port":{"Cwd":"C:\\Users\\ahmad\\source\\durid-ah.github.io","Command":"npm run dev"},"tree":{"Cwd":"C:\\Users\\ahmad\\source\\ref_cell_btree","Command":"cargo run"}}}
