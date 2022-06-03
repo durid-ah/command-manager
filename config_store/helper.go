@@ -13,3 +13,4 @@ func createCommand(commandValues *string) *exec.Cmd {
 		return exec.Command(commandAndArgs[0], commandAndArgs[1:]...)
 	}
 }
+

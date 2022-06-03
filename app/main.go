@@ -22,6 +22,4 @@ func main() {
 		}
 		parser.ParseCommands(&commandString, &configs)
 	}
-
-	// TODO: Add a list command	
 }
